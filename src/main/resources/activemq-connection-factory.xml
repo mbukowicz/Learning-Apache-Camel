@@ -7,7 +7,7 @@
     <!-- we use the vm protocol to communicate intra-jvm which is much faster than tcp -->
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61616" />
+        <property name="brokerURL" value="vm://myBroker?create=false&amp;waitForStart=5000" />
     </bean>
 
     <bean id="pooledConnectionFactory"
