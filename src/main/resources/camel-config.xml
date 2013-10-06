@@ -1,0 +1,28 @@
+<!-- this is a spring XML file where we have Camel embedded -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <import resource="classpath:activemq-connection-factory.xml" />
+    <import resource="classpath:activemq-embedded.xml" />
+
+    <!-- Here we define Camel, notice the namespace it uses -->
+    <camelContext id="exampleCamelContext" xmlns="http://camel.apache.org/schema/spring">
+        <template id="exampleProducerTemplate" />
+
+        <route>
+            <from uri="direct:inbox"/>
+            <to uri="activemq:queue:outbox" />
+        </route>
+
+        <route>
+            <from uri="activemq:queue:outbox" />
+            <to uri="exampleProcessor" />
+        </route>
+    </camelContext>
+
+    <bean id="exampleProcessor" class="example.ExampleProcessor" />
+</beans>

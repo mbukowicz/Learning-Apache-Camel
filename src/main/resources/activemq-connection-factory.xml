@@ -1,0 +1,30 @@
+<!-- this is a spring XML file where we have Camel embedded -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- create a Camel ActiveMQ component to use, using the Spring bean style -->
+    <!-- we use the vm protocol to communicate intra-jvm which is much faster than tcp -->
+    <bean id="jmsConnectionFactory"
+          class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616" />
+    </bean>
+
+    <bean id="pooledConnectionFactory"
+          class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+        <property name="maxConnections" value="200" />
+        <property name="connectionFactory" ref="jmsConnectionFactory" />
+    </bean>
+
+    <bean id="jmsConfig"
+          class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="connectionFactory" ref="pooledConnectionFactory"/>
+        <property name="concurrentConsumers" value="250"/>
+        <property name="autoStartup" value="true" />
+    </bean>
+
+    <bean id="activemq"
+          class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+    </bean>
+</beans>
